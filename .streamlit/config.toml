@@ -1,0 +1,9 @@
+[browser]
+gatherUsageStats = false
+
+[theme]
+base = "light"
+primaryColor = "#8B1E3F"
+
+[server]
+fileWatcherType = "none"

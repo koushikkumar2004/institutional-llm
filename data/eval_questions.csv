@@ -1,0 +1,39 @@
+test_type,role,question,expected_ids,forbidden_ids,note
+direct,student,What is the application fee?,3,,
+direct,student,What is the COMEDK code?,24,,
+direct,student,Can students pay their fees in cash?,35,,
+direct,student,Is there negative marking in RUASAT?,12,,
+direct,student,Does Ramaiah University accept admissions throughout the year?,14,,
+paraphrase,student,How much money do I need to pay to apply?,3,,0.4417 similarity in Colab; caused threshold change 0.45 -> 0.40
+paraphrase,student,How much is the application charge for each course?,3,,
+paraphrase,student,Tell me the entrance exam code for COMEDK.,24,,
+paraphrase,student,Which code should I use for COMEDK?,24,,
+paraphrase,student,What is the KCET code for RUAS?,23,,
+paraphrase,student,What is the PGCET code for MBA?,26,,
+paraphrase,student,When do admissions open?,14,,
+paraphrase,student,When does the university start accepting applications?,4|14,,either FAQ is acceptable
+paraphrase,student,Can diploma holders apply to RUAS?,30|32,,
+paraphrase,student,What entrance exams does RUAS accept?,41|2,,FAISS ranked 41 third in Colab; reranker fixed it
+paraphrase,student,Which entrance exams can I use for B.Tech admission?,41,,
+paraphrase,student,Can I change my program after admission?,42,,hallucination-prone in Colab
+paraphrase,student,Can I pay the fees in installments?,36,,
+paraphrase,student,What is the refund policy if I cancel my admission?,37|13,,
+paraphrase,student,How long after the exam do RUASAT results come out?,11,,
+paraphrase,student,Can I write RUASAT from home?,8|5,,
+paraphrase,student,Does RUAS give education loans?,40,,
+paraphrase,student,Which programs are offered at the GGC campus?,21,,
+paraphrase,student,Do I need original documents for admission?,34,,
+paraphrase,student,How can I contact the admissions office?,43,,FAQ 43 was tagged admin before the data fix
+kannada,student,ಅರ್ಜಿ ಶುಲ್ಕ ಎಷ್ಟು?,3,,refund FAQ ranked above it in Colab
+kannada,student,ಅರ್ಜಿ ಸಲ್ಲಿಸಲು ಎಷ್ಟು ಹಣ ಪಾವತಿಸಬೇಕು?,3,,
+kannada,student,Application fee ಎಷ್ಟು?,3,,mixed Kannada + English
+kannada,student,ಕಾಮೆಡ್ಕೆ ಕೋಡ್ ಏನು?,24,,
+role,student,What is the intake capacity for programs at Ramaiah University?,NONE,28,student must never see admin FAQ 28
+role,admin,What is the intake capacity for programs at Ramaiah University?,28,,
+role,admin,What is the intake capacity?,28,,
+out_of_scope,student,Who won the FIFA World Cup?,NONE,,
+out_of_scope,student,What is the capital of France?,NONE,,
+out_of_scope,student,Who is the current Prime Minister of India?,NONE,,
+out_of_scope,student,What are the hostel facilities like?,NONE,,not in the knowledge base
+out_of_scope,student,Does RUAS offer scholarships?,NONE,,known false positive: matched the education-loan FAQ in Colab
+out_of_scope,student,What is the placement percentage?,NONE,,not in the knowledge base

@@ -1,0 +1,44 @@
+﻿id,category,role,question,answer
+1,Eligibility,student,What are the eligibility criteria for admission to Ramaiah University?,"Eligibility criteria vary by program (UG/PG/doctoral) across fields like engineering, management, and health sciences. Students should check the official RUAS website for program-specific details."
+2,Admission_Process,student,What admission modes are available at Ramaiah University?,"RUAS offers multiple admission modes depending on the program. Engineering admissions are based on COMEDK, JEE, or KCET scores, while other programs use RUAS-AT, PGCET, DCET, CUET, SLAT, CLAT, MAT, CAT, GATE, or GPAT scores."
+3,Fees,student,What is the application fee for Ramaiah University?,The online application fee is Rs. 2000 per program.
+4,RUASAT_Exam,student,When does the RUASAT application process begin?,RUASAT applications typically open in December each year.
+5,RUASAT_Exam,student,Is RUASAT conducted online or offline?,RUASAT is conducted online as a proctored exam.
+6,RUASAT_Exam,student,What is slot booking for RUASAT?,Slot booking lets candidates choose their exam date and time.
+7,RUASAT_Exam,student,When does RUASAT slot booking open?,RUASAT slot booking typically opens in the mid-to-last week of March.
+8,RUASAT_Exam,student,Where can students take the RUASAT exam?,RUASAT is conducted online from anywhere using a laptop or system with a working webcam.
+9,RUASAT_Exam,student,How are students selected through RUASAT?,"Selection is purely merit-based, determined by the score obtained in the RUASAT exam."
+10,RUASAT_Exam,student,How long does the RUASAT exam last?,The exam duration varies depending on the program applied for; candidates should check the official website for specifics.
+11,RUASAT_Exam,student,When are RUASAT results announced?,Results are typically announced within 2 weeks of the exam being conducted.
+12,RUASAT_Exam,student,Is there negative marking in RUASAT?,"No, there is no negative marking in RUASAT."
+13,Policies,student,What is Ramaiah University's admission cancellation policy?,Cancellation policy follows UGC norms; students should refer to the official policy document for details.
+14,Admission_Process,student,Does Ramaiah University accept admissions throughout the year?,"No, admissions open around April each year, with applications starting in December and selection based on merit."
+15,Admission_Process,student,When do academic courses at Ramaiah University commence?,"Academic sessions typically begin in August or September, depending on the specific program."
+16,Admission_Process,student,Can students apply for UG/PG programs without final year results?,"Yes, applications are accepted even without final results, provided certain conditions are met at the time of document verification."
+17,Admission_Process,student,Can a student apply for multiple programs at Ramaiah University?,"Yes, a student can apply for more than one program, but each application must use a different email address and contact number."
+18,Admission_Process,student,Are there differences in faculty or classes based on admission mode (RUASAT vs KCET/COMEDK)?,"There is no difference in faculty or classes based on whether admission was through RUASAT, KCET, or COMEDK."
+19,Admission_Process,student,Are placements different based on admission mode (RUASAT vs KCET/COMEDK)?,"There is no difference in placements based on whether admission was through RUASAT, KCET, or COMEDK."
+20,Programs,student,What UG/PG programs does Ramaiah University offer?,RUAS offers a wide range of undergraduate and postgraduate programs across multiple faculties. Specific program details are available on the official website.
+21,Programs,student,Which programs are offered at the GGC and RTC campuses?,"The RTC campus offers Engineering, Art & Design, Natural Sciences, B.Voc, and PG Diploma courses. The GGC campus mainly offers Pharmacy, Life & Allied Health Sciences, Dental Sciences, Social Sciences, Management & Commerce, Hospitality Management, Law, Nursing, Physiotherapy, and Ph.D programs."
+22,Admission_Process,student,How can students modify their application form after submission?,Students need to contact the Directorate of Admissions directly (phone or email) to request corrections or modifications to a submitted application.
+23,Codes,student,What is the CET code of Ramaiah University in KEA?,The KEA (Karnataka Examinations Authority) CET code for engineering at RUAS is E235.
+24,Codes,student,What is the COMEDK code for Ramaiah University?,The COMEDK code for RUAS is E197.
+25,Codes,student,What is the PGCET code for engineering programs at Ramaiah University?,The PGCET code for engineering programs is T945.
+26,Codes,student,What is the PGCET code for the MBA program at Ramaiah University?,The PGCET code for the MBA program is B348.
+27,Admission_Process,student,Can a student surrender their university seat after getting a KCET seat?,"Yes, students can surrender their RUAS seat if they secure a seat through KCET."
+28,Admissions,admin,What is the intake capacity for programs at Ramaiah University?,Intake capacity varies by discipline and level of study (UG/PG); refer to the official website for program-specific numbers.
+29,Admission_Process,student,What is the Ph.D admission process at Ramaiah University?,"Register on the official website, verify mobile/email, complete the application and pay the Rs. 2000 fee, then appear for the RUAS-AT followed by an offline interview. Shortlisted candidates receive an offer letter from the Directorate of Admissions."
+30,Eligibility,student,Can diploma holders apply for programs at Ramaiah University?,"Yes, students who have completed a 3-year diploma can apply to join relevant RUAS programs."
+31,Fees,student,What is the fee structure for programs at Ramaiah University?,The fee structure varies by program type (UG/PG) and specialization; exact figures are listed on the official program pages.
+32,Admission_Process,student,What is the admission procedure for B.Tech lateral entry?,"Diploma holders can join directly into the 2nd year (3rd semester) of B.Tech, bypassing the first year. Register online, pay the Rs. 2000 fee, take the RUASAT (usually in April), and selected candidates receive an offer letter based on merit, typically in May."
+33,General,student,How can students access the e-brochure of Ramaiah University?,The e-brochure is available on the official website or can be requested from the Directorate of Admissions.
+34,Admission_Process,student,Are original documents required during the admission process?,"Yes, both original documents and photocopies of required certificates must be submitted for verification and final admission confirmation."
+35,Fees,student,Can students pay their fees in cash?,"No, fee payment is accepted only through online methods or Demand Draft."
+36,Fees,student,Is fee payment allowed in installments?,"No, there is no split payment option; the full fee for the respective year must be paid in one installment."
+37,Fees,student,What is the fee refund policy at Ramaiah University?,"Refunds follow UGC norms based on timing: 100% if cancelled 15+ days before the notified admission deadline, 90% if less than 15 days before, 80% within 15 days after, 50% within 16-30 days after, and 0% refund after 30 days post-deadline."
+38,Admission_Process,student,Can students get admission without appearing for an entrance test?,"No, appearing for a recognized competitive entrance exam (or at minimum RUAS-AT) is mandatory for admission."
+39,General,student,Does Ramaiah University offer skill development programs?,"Yes, RUAS offers comprehensive skill development programs covering technical proficiency, soft skills, entrepreneurship, and global exposure alongside academics."
+40,Fees,student,Does Ramaiah University provide education loans directly?,"No, RUAS does not directly provide education loans, but it issues the necessary documents required for students to avail loans from banks/financial institutions."
+41,Admission_Process,student,What entrance exams are accepted for different programs?,"Any recognized competitive exam is considered. B.Tech admissions accept JEE Mains, COMEDK, or KCET scores; other programs primarily use RUASAT."
+42,Admission_Process,student,Is it possible to change programs after admission approval?,This depends on the specific program and timing of the request; the university evaluates each case based on availability.
+43,General,admin,How can students clarify admission-related queries?,Students can visit the official website www.msruas.ac.in or contact the Directorate of Admissions at 8010004444 / admissions@msruas.ac.in.

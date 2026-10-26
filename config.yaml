@@ -1,0 +1,88 @@
+# ---------------------------------------------------------------------------
+# University FAQ Assistant - configuration
+#
+# One copy of this file = one university ("tenant"). To set the assistant up
+# for another university, copy this file, point it at their knowledge base
+# and change the tenant id/name. The code does not change.
+# ---------------------------------------------------------------------------
+
+tenant:
+  id: ruas
+  name: Ramaiah University of Applied Sciences
+
+knowledge_base:
+  # CSV with columns: id, category, role, question, answer
+  path: data/ruas_faqs.csv
+
+# Which FAQ "role" labels each kind of user is allowed to see.
+# Unknown roles are rejected.
+roles:
+  student: [student]
+  admin: [student, admin]
+
+models:
+  # Turns text into 384 numbers that capture its meaning (runs on CPU).
+  embedding: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+  # Second opinion that re-scores the shortlisted FAQs (runs on CPU).
+  # Multilingual. Replaced the English-only cross-encoder/ms-marco-MiniLM-L-6-v2:
+  # evaluation went from 32/38 to 34/38 and Kannada from 1/4 to 2/4.
+  reranker: BAAI/bge-reranker-v2-m3
+
+retrieval:
+  top_k: 10                  # how many FAQs FAISS shortlists
+  similarity_threshold: 0.40 # below this, the question counts as "not in the FAQs"
+  rerank_min_score: null     # optional second gate on the reranker score (null = off)
+
+# The LLM runs as a separate server that speaks the OpenAI-style API.
+#   Laptop now : Ollama   -> base_url http://localhost:11434/v1, model qwen2.5:3b
+#   HPC later  : vLLM     -> base_url http://<hpc-host>:8000/v1,  model <14B model>
+# Only these lines change when moving to the HPC.
+llm:
+  base_url: http://localhost:11434/v1
+  model: qwen2.5:3b
+  api_key: ollama            # Ollama ignores it; vLLM/hosted servers may need a real one
+  temperature: 0
+  max_tokens: 200
+  timeout_seconds: 120
+
+# generate = LLM rewrites the chosen FAQ answer (follows rules)
+# direct   = return the stored FAQ answer word for word (no LLM)
+answer_mode: generate
+
+storage:
+  # Saved index files and the SQLite database live here.
+  dir: storage
+
+# Rules loaded into an empty database the first time it is created.
+# Optional per rule: scope (an FAQ category) and status (active | inactive).
+# After that, edit rules on the "Rules" page of the app, not here.
+# Each one comes from a problem actually observed while testing in Colab.
+seed_rules:
+  - text: >-
+      State only facts that appear in the FAQ entry. Never add exam names,
+      dates, fees, offices, committees, procedures, links or contact details
+      that the FAQ entry does not contain.
+    reason: >-
+      Testing: for "Can I change my program after admission?" the model
+      invented an admissions committee and enrollment periods.
+  - text: >-
+      Do not expand abbreviations such as COMEDK, KCET, JEE or RUASAT unless
+      the FAQ entry itself expands them.
+    reason: >-
+      Testing: the model expanded COMEDK as "Common Admission Test", which is
+      wrong.
+  - text: >-
+      Begin the answer with "Yes" or "No" only when the user asked a yes/no
+      question.
+    reason: >-
+      Testing: "How can I pay my application fee?" was answered "No, fee
+      payment is accepted only through online methods or Demand Draft."
+      Switched off after the move to Qwen 3B: with rules repeated next to the
+      question, it made answers start with "Yes," even for "what" questions.
+    status: inactive
+  - text: >-
+      If the FAQ entry answers only part of the question, answer that part and
+      say that the rest is not in the available FAQs.
+    reason: Keeps partial matches honest instead of guessing the missing part.
+  - text: Keep the answer to one to three sentences.
+    reason: FAQ answers should be short and easy to read.

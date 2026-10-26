@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Generated at runtime (index files, SQLite database, evaluation runs)
+storage/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

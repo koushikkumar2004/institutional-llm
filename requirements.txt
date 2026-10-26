@@ -1,0 +1,11 @@
+# Retrieval models (CPU is fine). Pulls in PyTorch (CPU build on Windows).
+sentence-transformers>=3.0
+# Vector search (exact inner product, IndexFlatIP)
+faiss-cpu>=1.8
+# Testing UI
+streamlit>=1.36
+# Data + config + talking to the LLM server
+pandas>=2.0
+numpy>=1.26
+pyyaml>=6.0
+requests>=2.31

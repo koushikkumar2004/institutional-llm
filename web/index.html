@@ -1,0 +1,829 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admissions Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Noto+Sans+Kannada:wght@400;600&family=Young+Serif&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1d1a2b;
+    --slate: #5e5a70;
+    --paper: #fbfafd;
+    --line: #e6e3ee;
+    --maroon: #8b1e3f;
+    --maroon-deep: #6e1531;
+    --maroon-wash: #f6e8ed;
+    --seal: #9a6b12;
+    --seal-wash: #fbf3e2;
+    --ok: #1f7a4d;
+    --ui: "Hanken Grotesk", "Noto Sans Kannada", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --display: "Young Serif", Georgia, "Noto Sans Kannada", serif;
+    --radius-s: 8px;
+    --radius-l: 18px;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font: 400 16px/1.55 var(--ui);
+    -webkit-font-smoothing: antialiased;
+  }
+  button, input, textarea { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  :focus-visible { outline: 3px solid color-mix(in srgb, var(--maroon) 55%, white); outline-offset: 2px; }
+  .hidden { display: none !important; }
+
+  /* ---------------- sign in ---------------- */
+  .signin { min-height: 100%; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 4fr); }
+  .signin-brand {
+    background: var(--maroon);
+    color: #fff;
+    padding: clamp(32px, 6vw, 72px);
+    display: flex; flex-direction: column; justify-content: space-between; gap: 40px;
+  }
+  .signin-brand .uni { font-weight: 600; opacity: .85; max-width: 22ch; }
+  .signin-brand h1 {
+    font: 400 clamp(2.4rem, 5vw, 4rem)/1.05 var(--display);
+    margin: 0; max-width: 12ch; letter-spacing: -.01em;
+  }
+  .signin-brand p { margin: 0; max-width: 40ch; opacity: .9; font-size: 1.05rem; }
+  .signin-form { display: flex; align-items: center; justify-content: center; padding: 40px 24px; }
+  .signin-card { width: 100%; max-width: 360px; }
+  .signin-card h2 { font: 600 1.35rem/1.3 var(--ui); margin: 0 0 6px; }
+  .signin-card .hint { color: var(--slate); margin: 0 0 24px; font-size: .95rem; }
+  .segment { display: grid; grid-template-columns: 1fr 1fr; background: #efedf4; border-radius: 999px; padding: 4px; margin-bottom: 22px; }
+  .segment button { border: 0; background: transparent; padding: 9px 0; border-radius: 999px; font-weight: 600; color: var(--slate); }
+  .segment button[aria-pressed="true"] { background: #fff; color: var(--ink); box-shadow: 0 1px 2px rgba(29,26,43,.12); }
+  label { display: block; font-weight: 600; font-size: .92rem; margin-bottom: 6px; }
+  .field { width: 100%; padding: 12px 14px; border: 1.5px solid var(--line); border-radius: var(--radius-s); background: #fff; }
+  .field:focus { border-color: var(--maroon); outline: none; }
+  .primary {
+    width: 100%; margin-top: 18px; padding: 13px 16px; border: 0; border-radius: var(--radius-s);
+    background: var(--maroon); color: #fff; font-weight: 600;
+  }
+  .primary:hover { background: var(--maroon-deep); }
+  .form-error { color: var(--maroon); font-size: .92rem; margin: 12px 0 0; min-height: 1.4em; }
+
+  /* ---------------- chat shell ---------------- */
+  .app { height: 100%; display: grid; grid-template-rows: auto 1fr auto; grid-template-columns: minmax(0, 1fr); }
+  .topbar {
+    display: flex; align-items: center; gap: 12px; padding: 12px clamp(16px, 4vw, 32px);
+    border-bottom: 1px solid var(--line); background: #fff;
+  }
+  .topbar .crest {
+    width: 34px; height: 34px; border-radius: 50%; background: var(--maroon); color: #fff;
+    display: grid; place-items: center; font: 400 15px var(--display); flex: none;
+  }
+  .topbar .title { font-weight: 600; line-height: 1.2; }
+  .topbar .title small { display: block; font-weight: 400; color: var(--slate); font-size: .82rem; }
+  .topbar .spacer { flex: 1; }
+  .who { font-size: .9rem; color: var(--slate); }
+  .badge { background: var(--seal-wash); color: var(--seal); border-radius: 999px; padding: 2px 10px; font-weight: 600; font-size: .82rem; }
+  .ghost { border: 1.5px solid var(--line); background: #fff; border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: .9rem; }
+  .ghost:hover { border-color: var(--slate); }
+  a.ghost { text-decoration: none; color: var(--ink); }
+
+  .scroll { overflow-y: auto; }
+  .thread { max-width: 760px; margin: 0 auto; padding: 32px clamp(16px, 4vw, 24px) 24px; }
+
+  .welcome h2 { font: 400 clamp(1.9rem, 4.2vw, 2.7rem)/1.12 var(--display); margin: 8px 0 12px; max-width: 18ch; }
+  .welcome p { color: var(--slate); margin: 0 0 28px; max-width: 52ch; }
+  .suggestions { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+  .suggestions button {
+    width: 100%; text-align: left; border: 0; border-bottom: 1px solid var(--line); background: transparent;
+    padding: 14px 4px; display: flex; justify-content: space-between; gap: 16px; font-size: 1rem;
+  }
+  .suggestions button:hover { color: var(--maroon); }
+  .suggestions button span:last-child { color: var(--slate); font-size: .88rem; flex: none; }
+
+  .msg { margin: 0 0 26px; }
+  .msg.user { display: flex; justify-content: flex-end; }
+  .msg.user .bubble {
+    background: var(--maroon); color: #fff; padding: 10px 16px; border-radius: var(--radius-l) var(--radius-l) 4px var(--radius-l);
+    max-width: min(80%, 520px); white-space: pre-wrap; overflow-wrap: anywhere;
+  }
+  .msg.bot .text { font-size: 1.06rem; max-width: 62ch; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .msg.bot.notfound .text { color: var(--slate); }
+  .msg.bot .tip { color: var(--slate); font-size: .92rem; margin-top: 4px; }
+
+  /* the one memorable element: the official-source seal */
+  .seal {
+    display: inline-flex; align-items: center; gap: 10px; margin-top: 12px;
+    background: var(--seal-wash); color: #5c430c; border-radius: 999px; padding: 5px 14px 5px 5px;
+    font-size: .88rem; max-width: 100%;
+  }
+  .seal svg { flex: none; }
+  .seal span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .seal b { color: var(--seal); font-weight: 700; }
+
+  .actions { display: flex; align-items: center; gap: 6px; margin-top: 10px; color: var(--slate); font-size: .85rem; flex-wrap: wrap; }
+  .vote { border: 1.5px solid var(--line); background: #fff; border-radius: 999px; padding: 3px 12px; font-size: .85rem; }
+  .vote:hover { border-color: var(--slate); }
+  .vote[aria-pressed="true"] { border-color: var(--maroon); background: var(--maroon-wash); color: var(--maroon); font-weight: 600; }
+  .remark { display: flex; gap: 8px; margin-top: 10px; max-width: 520px; }
+  .remark input { flex: 1; padding: 8px 12px; border: 1.5px solid var(--line); border-radius: var(--radius-s); font-size: .92rem; background: #fff; }
+  .remark input:focus { border-color: var(--maroon); outline: none; }
+  .remark button { border: 0; background: var(--ink); color: #fff; border-radius: var(--radius-s); padding: 8px 14px; font-weight: 600; font-size: .9rem; }
+  .thanks { color: var(--ok); font-weight: 600; }
+
+  .typing { display: inline-flex; gap: 5px; padding: 8px 0; }
+  .typing i { width: 7px; height: 7px; border-radius: 50%; background: var(--slate); opacity: .35; animation: blink 1.2s infinite; }
+  .typing i:nth-child(2) { animation-delay: .2s; }
+  .typing i:nth-child(3) { animation-delay: .4s; }
+  @keyframes blink { 0%, 80%, 100% { opacity: .25; } 40% { opacity: .9; } }
+  .typing-label { color: var(--slate); font-size: .9rem; margin-left: 10px; }
+
+  .composer-wrap { border-top: 1px solid var(--line); background: #fff; }
+  .composer { max-width: 760px; margin: 0 auto; padding: 14px clamp(16px, 4vw, 24px) 16px; display: flex; gap: 10px; align-items: flex-end; }
+  .composer textarea {
+    flex: 1; resize: none; min-height: 48px; max-height: 160px; padding: 12px 16px;
+    border: 1.5px solid var(--line); border-radius: 24px; background: var(--paper); line-height: 1.4;
+  }
+  .composer textarea:focus { border-color: var(--maroon); outline: none; background: #fff; }
+  .send { border: 0; background: var(--maroon); color: #fff; border-radius: 24px; padding: 0 20px; height: 48px; font-weight: 600; }
+  .send:disabled { opacity: .5; cursor: default; }
+  .footnote { max-width: 760px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 24px) 12px; color: var(--slate); font-size: .8rem; }
+
+
+  /* ---------------- streaming caret ---------------- */
+  .msg.bot .text.streaming::after {
+    content: ""; display: inline-block; width: .55em; height: 1.05em; margin-left: 2px; vertical-align: -.15em;
+    background: var(--maroon); opacity: .7; animation: caret 1s steps(2) infinite;
+  }
+  @keyframes caret { 50% { opacity: 0; } }
+
+  /* ---------------- view tabs (admins) ---------------- */
+  .tabs { display: flex; gap: 4px; background: #efedf4; border-radius: 999px; padding: 3px; }
+  .tabs button { border: 0; background: transparent; border-radius: 999px; padding: 5px 14px; font-weight: 600; font-size: .9rem; color: var(--slate); }
+  .tabs button[aria-selected="true"] { background: #fff; color: var(--ink); box-shadow: 0 1px 2px rgba(29,26,43,.12); }
+
+  /* ---------------- dashboard ---------------- */
+  .dash { max-width: 1120px; margin: 0 auto; padding: 28px clamp(16px, 4vw, 32px) 48px; }
+  .dash-head { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+  .dash-head h2 { font: 400 clamp(1.7rem, 3.4vw, 2.3rem)/1.1 var(--display); margin: 0; }
+  .dash-head p { color: var(--slate); margin: 0; flex: 1; min-width: 220px; }
+  .figures { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-bottom: 32px; }
+  .figure { padding: 16px 16px 16px 0; }
+  .figure + .figure { padding-left: 16px; border-left: 1px solid var(--line); }
+  .figure b { display: block; font: 400 1.9rem/1.1 var(--display); }
+  .figure span { color: var(--slate); font-size: .88rem; }
+  .figure.attention b { color: var(--maroon); }
+  .columns { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 40px; align-items: start; }
+  .col-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+  .col-head h3 { font: 600 1.15rem/1.3 var(--ui); margin: 0; }
+  .col-note { color: var(--slate); font-size: .9rem; margin: 0 0 14px; }
+  .filter { display: flex; gap: 4px; }
+  .filter button { border: 1.5px solid var(--line); background: #fff; border-radius: 999px; padding: 3px 12px; font-size: .85rem; font-weight: 600; color: var(--slate); }
+  .filter button[aria-pressed="true"] { border-color: var(--ink); color: var(--ink); }
+
+  .fb { border-top: 1px solid var(--line); padding: 16px 0; }
+  .fb-top { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-size: .86rem; color: var(--slate); margin-bottom: 6px; }
+  .pill { border-radius: 999px; padding: 1px 10px; font-weight: 600; font-size: .8rem; }
+  .pill.bad { background: var(--maroon-wash); color: var(--maroon); }
+  .pill.good { background: #e6f4ec; color: var(--ok); }
+  .pill.done { background: #efedf4; color: var(--slate); }
+  .fb-q { font-weight: 600; margin: 0 0 4px; }
+  .fb-a { color: var(--slate); margin: 0 0 8px; font-size: .95rem; }
+  .fb-remark { margin: 0 0 10px; padding-left: 12px; border-left: 3px solid var(--seal); }
+  .fb-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn { border: 1.5px solid var(--line); background: #fff; border-radius: var(--radius-s); padding: 6px 12px; font-weight: 600; font-size: .88rem; }
+  .btn:hover { border-color: var(--slate); }
+  .btn.main { background: var(--maroon); border-color: var(--maroon); color: #fff; }
+  .btn.main:hover { background: var(--maroon-deep); }
+  .btn:disabled { opacity: .55; cursor: default; }
+  .draft { margin-top: 10px; display: grid; gap: 8px; }
+  .draft textarea, .rule-form textarea { width: 100%; min-height: 64px; padding: 10px 12px; border: 1.5px solid var(--line); border-radius: var(--radius-s); background: #fff; resize: vertical; }
+  .draft textarea:focus, .rule-form textarea:focus { border-color: var(--maroon); outline: none; }
+  .draft-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  select { padding: 6px 10px; border: 1.5px solid var(--line); border-radius: var(--radius-s); background: #fff; font: inherit; font-size: .88rem; }
+  .muted { color: var(--slate); font-size: .86rem; }
+
+  .rule-form { display: grid; gap: 8px; margin-bottom: 18px; }
+  .rule { display: grid; grid-template-columns: auto 1fr; gap: 12px; border-top: 1px solid var(--line); padding: 14px 0; }
+  .rule p { margin: 0 0 4px; }
+  .rule.off p { color: var(--slate); }
+  .switch { position: relative; width: 40px; height: 24px; flex: none; margin-top: 1px; }
+  .switch input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+  .switch span { position: absolute; inset: 0; border-radius: 999px; background: #d9d6e2; transition: background .15s; pointer-events: none; }
+  .switch span::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.2); transition: transform .15s; }
+  .switch input:checked + span { background: var(--ok); }
+  .switch input:checked + span::after { transform: translateX(16px); }
+  .switch input:focus-visible + span { outline: 3px solid color-mix(in srgb, var(--maroon) 55%, white); outline-offset: 2px; }
+  .empty { color: var(--slate); padding: 18px 0; border-top: 1px solid var(--line); }
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 10px 18px; border-radius: 999px; font-size: .92rem; z-index: 10; }
+
+  @media (max-width: 900px) {
+    .figures { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .figure:nth-child(4) { border-left: 0; padding-left: 0; }
+    .figure:nth-child(n+4) { border-top: 1px solid var(--line); }
+    .columns { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 760px) {
+    .signin { grid-template-columns: 1fr; }
+    .signin-brand { gap: 20px; }
+    .signin-brand h1 { font-size: 2.3rem; }
+    .who, .badge { display: none !important; }
+    .topbar { gap: 8px; }
+    .topbar .title { font-size: .95rem; }
+    .topbar .title small { display: none; }
+    .topbar .crest { display: none; }
+    .tabs button { padding: 5px 10px; }
+    .ghost { padding: 6px 10px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .typing i { animation: none; opacity: .6; } .msg.bot .text.streaming::after { animation: none; } .switch span, .switch span::after { transition: none; } }
+</style>
+</head>
+<body>
+
+<!-- ============ sign in ============ -->
+<main id="signin" class="signin hidden">
+  <section class="signin-brand">
+    <div class="uni" id="uniName">University</div>
+    <h1>Ask us about admissions.</h1>
+    <p>Fees, entrance exams, RUASAT, programmes and policies. Every answer comes from the university's official FAQs, and if something isn't covered, the assistant says so.</p>
+  </section>
+  <section class="signin-form">
+    <form class="signin-card" id="signinForm" autocomplete="off">
+      <h2>Sign in</h2>
+      <p class="hint">Choose how you're using the assistant.</p>
+      <div class="segment" role="group" aria-label="Account type">
+        <button type="button" id="tabStudent" aria-pressed="true">Student</button>
+        <button type="button" id="tabAdmin" aria-pressed="false">Admin</button>
+      </div>
+      <div id="studentFields">
+        <label for="nameInput">Your name or USN <span style="font-weight:400;color:var(--slate)">(optional)</span></label>
+        <input class="field" id="nameInput" maxlength="60" placeholder="e.g. Priya, or 1MS22CS001">
+      </div>
+      <div id="adminFields" class="hidden">
+        <label for="pinInput">Admin PIN</label>
+        <input class="field" id="pinInput" type="password" maxlength="40">
+      </div>
+      <button class="primary" type="submit" id="signinBtn">Continue</button>
+      <p class="form-error" id="signinError" role="alert"></p>
+    </form>
+  </section>
+</main>
+
+<!-- ============ chat ============ -->
+<div id="app" class="app hidden">
+  <header class="topbar">
+    <div class="crest" aria-hidden="true">R</div>
+    <div class="title">Admissions Assistant<small id="uniName2"></small></div>
+    <div class="spacer"></div>
+    <div class="tabs hidden" id="tabs" role="tablist" aria-label="View">
+      <button type="button" role="tab" id="tabChat" aria-selected="true">Chat</button>
+      <button type="button" role="tab" id="tabDash" aria-selected="false">Dashboard</button>
+    </div>
+    <span class="who" id="whoName"></span>
+    <span class="badge hidden" id="adminBadge">Admin</span>
+    <button class="ghost" id="signoutBtn" type="button">Sign out</button>
+  </header>
+
+  <!-- dashboard (admins) -->
+  <div class="scroll hidden" id="dashView">
+    <div class="dash">
+      <div class="dash-head">
+        <h2>Dashboard</h2>
+        <p>What students asked, what they flagged, and the rules every answer follows.</p>
+        <button class="btn" type="button" id="refreshBtn">Refresh</button>
+      </div>
+      <div class="figures" id="figures"></div>
+      <div class="columns">
+        <section>
+          <div class="col-head">
+            <h3>Student feedback</h3>
+            <div class="filter" role="group" aria-label="Show feedback">
+              <button type="button" id="fbOpen" aria-pressed="true">Needs review</button>
+              <button type="button" id="fbAll" aria-pressed="false">All</button>
+            </div>
+          </div>
+          <p class="col-note">Nothing changes from feedback alone. Turn a remark into a rule and approve it, or dismiss it.</p>
+          <div id="fbList"></div>
+        </section>
+        <section>
+          <div class="col-head"><h3>Rules the assistant follows</h3></div>
+          <p class="col-note">Rules that are switched on are sent with every answer. Switch one off to stop it at once.</p>
+          <form class="rule-form" id="ruleForm">
+            <label for="ruleText" class="hidden">New rule</label>
+            <textarea id="ruleText" maxlength="500" placeholder="Add a rule, e.g. Keep answers to two sentences."></textarea>
+            <div class="draft-row">
+              <label for="ruleScope" class="muted" style="margin:0;font-weight:400">Applies to</label>
+              <select id="ruleScope"></select>
+              <button class="btn main" type="submit">Add rule</button>
+            </div>
+          </form>
+          <div id="ruleList"></div>
+          <p class="muted" style="margin-top:20px">Need scores, rule history or the FAQ list? Open the <a href="http://localhost:8501" target="_blank" rel="noopener">full admin console</a> (start it with run_app.bat).</p>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll" id="scroll">
+    <div class="thread" id="thread" aria-live="polite">
+      <section class="welcome" id="welcome">
+        <h2>What would you like to know about admissions?</h2>
+        <p>Ask in your own words, in English or Kannada. Answers come from the official FAQs, and each one shows which FAQ it came from.</p>
+        <ul class="suggestions" id="suggestions"></ul>
+      </section>
+    </div>
+  </div>
+
+  <div class="composer-wrap" id="composerWrap">
+    <form class="composer" id="composer">
+      <label for="question" class="hidden">Your question</label>
+      <textarea id="question" rows="1" maxlength="500" placeholder="Ask about admissions"></textarea>
+      <button class="send" id="sendBtn" type="submit">Ask</button>
+    </form>
+    <div class="footnote" id="footnote">Answers are generated from the official FAQs. For anything important, confirm with the Directorate of Admissions.</div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const SUGGESTIONS = [
+    ["How much money do I need to pay to apply?", "Fees"],
+    ["What is the COMEDK code for RUAS?", "Codes"],
+    ["Is there negative marking in RUASAT?", "RUASAT"],
+    ["Can diploma holders apply?", "Eligibility"],
+    ["Can I change my program after admission?", "Policies"],
+    ["ಅರ್ಜಿ ಶುಲ್ಕ ಎಷ್ಟು?", "Kannada"],
+  ];
+  let token = null;
+  let role = "student";
+  let me = null;
+  let busy = false;
+  let fbFilter = "open";
+  let summary = null;
+  try { token = sessionStorage.getItem("faq_token"); } catch (e) { token = null; }
+
+  // ---------------------------------------------------------- helpers
+  function el(tag, cls, text) {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text !== undefined && text !== null) n.textContent = text;
+    return n;
+  }
+  function toast(msg) {
+    document.querySelectorAll(".toast").forEach((n) => n.remove());
+    const t = el("div", "toast", msg);
+    t.setAttribute("role", "status");
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 2600);
+  }
+  function headers(json) {
+    const h = {};
+    if (json) h["Content-Type"] = "application/json";
+    if (token) h["Authorization"] = "Bearer " + token;
+    return h;
+  }
+  async function api(path, body) {
+    const opts = { method: body === undefined ? "GET" : "POST", headers: headers(body !== undefined) };
+    if (body !== undefined) opts.body = JSON.stringify(body);
+    let res;
+    try { res = await fetch(path, opts); }
+    catch (e) { throw new Error("Can't reach the assistant. Check that the server window is still running."); }
+    const data = await res.json().catch(() => ({}));
+    if (res.status === 401) { showSignin(); throw new Error(data.error || "Please sign in again."); }
+    if (!res.ok) throw new Error(data.error || "Request failed (" + res.status + ")");
+    return data;
+  }
+  function when(iso) {
+    if (!iso) return "";
+    const d = new Date(iso.replace(" ", "T"));
+    if (isNaN(d)) return iso;
+    return d.toLocaleString(undefined, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+  }
+
+  // ------------------------------------------------------------ sign in
+  function setTab(r) {
+    role = r;
+    $("tabStudent").setAttribute("aria-pressed", r === "student");
+    $("tabAdmin").setAttribute("aria-pressed", r === "admin");
+    $("studentFields").classList.toggle("hidden", r !== "student");
+    $("adminFields").classList.toggle("hidden", r !== "admin");
+    $("signinError").textContent = "";
+  }
+  $("tabStudent").onclick = () => setTab("student");
+  $("tabAdmin").onclick = () => { setTab("admin"); $("pinInput").focus(); };
+
+  $("signinForm").onsubmit = async (e) => {
+    e.preventDefault();
+    $("signinError").textContent = "";
+    $("signinBtn").disabled = true;
+    try {
+      const body = role === "admin" ? { role, pin: $("pinInput").value } : { role, name: $("nameInput").value };
+      const data = await api("/api/login", body);
+      token = data.token;
+      try { sessionStorage.setItem("faq_token", token); } catch (e2) {}
+      $("pinInput").value = "";
+      showApp(data);
+    } catch (err) {
+      $("signinError").textContent = err.message;
+    } finally {
+      $("signinBtn").disabled = false;
+    }
+  };
+
+  function showSignin() {
+    token = null; me = null;
+    try { sessionStorage.removeItem("faq_token"); } catch (e) {}
+    $("app").classList.add("hidden");
+    $("signin").classList.remove("hidden");
+  }
+
+  function showApp(who) {
+    me = who;
+    $("signin").classList.add("hidden");
+    $("app").classList.remove("hidden");
+    const isAdmin = who.role === "admin";
+    $("whoName").textContent = isAdmin ? "" : who.name;
+    $("adminBadge").classList.toggle("hidden", !isAdmin);
+    $("tabs").classList.toggle("hidden", !isAdmin);
+    showView("chat");
+  }
+
+  $("signoutBtn").onclick = async () => {
+    try { await api("/api/logout", {}); } catch (e) {}
+    $("thread").querySelectorAll(".msg").forEach((n) => n.remove());
+    $("welcome").classList.remove("hidden");
+    showSignin();
+  };
+
+  // -------------------------------------------------------------- views
+  function showView(view) {
+    const dash = view === "dash";
+    $("tabChat").setAttribute("aria-selected", !dash);
+    $("tabDash").setAttribute("aria-selected", dash);
+    $("dashView").classList.toggle("hidden", !dash);
+    $("scroll").classList.toggle("hidden", dash);
+    $("composerWrap").classList.toggle("hidden", dash);
+    if (dash) loadDashboard(); else $("question").focus();
+  }
+  $("tabChat").onclick = () => showView("chat");
+  $("tabDash").onclick = () => showView("dash");
+
+  // --------------------------------------------------------------- chat
+  function scrollDown() { const s = $("scroll"); s.scrollTop = s.scrollHeight; }
+
+  const SEAL_SVG = '<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="12" fill="#9a6b12"/><circle cx="12" cy="12" r="8.5" fill="none" stroke="#fbf3e2" stroke-width="1.2" stroke-dasharray="1.6 1.6"/><path d="M8 12.3l2.6 2.5L16.2 9" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  function addUser(text) {
+    const m = el("div", "msg user");
+    m.appendChild(el("div", "bubble", text));
+    $("thread").appendChild(m);
+  }
+
+  function addTyping() {
+    const m = el("div", "msg bot");
+    const t = el("div", "typing");
+    t.append(el("i"), el("i"), el("i"));
+    m.append(t, el("span", "typing-label", "Checking the official FAQs"));
+    $("thread").appendChild(m);
+    return m;
+  }
+
+  // Fills in a bot message once the full answer is known.
+  function finishBot(m, r) {
+    const notFound = r.status !== "answered";
+    m.classList.toggle("notfound", notFound);
+    const text = m.querySelector(".text");
+    text.classList.remove("streaming");
+    text.textContent = r.answer;
+    if (notFound) m.appendChild(el("div", "tip", "Try asking it another way, or contact the Directorate of Admissions."));
+    if (r.source) {
+      const s = el("div", "seal");
+      s.title = "Official FAQ #" + r.source.faq_id + ": " + r.source.question;
+      s.insertAdjacentHTML("afterbegin", SEAL_SVG);
+      const label = el("span");
+      label.append(el("b", null, "Official FAQ #" + r.source.faq_id), document.createTextNode("  " + r.source.question));
+      s.appendChild(label);
+      m.appendChild(s);
+    }
+    if (r.conversation_id) m.appendChild(feedbackRow(r));
+  }
+
+  function feedbackRow(r) {
+    const row = el("div", "actions");
+    row.appendChild(el("span", null, "Was this helpful?"));
+    const up = el("button", "vote", "Yes"); up.type = "button"; up.setAttribute("aria-pressed", "false");
+    const down = el("button", "vote", "No"); down.type = "button"; down.setAttribute("aria-pressed", "false");
+    row.append(up, down);
+    const secs = el("span", null, (r.latency_ms / 1000).toFixed(1) + " s");
+    secs.style.marginLeft = "auto";
+    row.appendChild(secs);
+    const wrap = el("div");
+    wrap.appendChild(row);
+
+    async function send(verdict, remark) {
+      try {
+        await api("/api/feedback", { conversation_id: r.conversation_id, verdict, remark: remark || "" });
+        wrap.replaceChildren(el("div", "actions thanks", verdict === "good" ? "Thanks for the feedback." : "Thanks. Your note was sent to the admissions team for review."));
+      } catch (err) {
+        row.appendChild(el("span", null, err.message));
+      }
+    }
+    up.onclick = () => send("good");
+    down.onclick = () => {
+      up.setAttribute("aria-pressed", "false");
+      down.setAttribute("aria-pressed", "true");
+      if (wrap.querySelector(".remark")) return;
+      const f = el("form", "remark");
+      const input = el("input"); input.placeholder = "What was wrong or missing? (optional)"; input.maxLength = 500;
+      const b = el("button", null, "Send feedback"); b.type = "submit";
+      f.append(input, b);
+      f.onsubmit = (e) => { e.preventDefault(); send("bad", input.value); };
+      wrap.appendChild(f);
+      input.focus();
+    };
+    return wrap;
+  }
+
+  async function ask(question) {
+    question = question.trim();
+    if (!question || busy) return;
+    busy = true;
+    $("sendBtn").disabled = true;
+    $("welcome").classList.add("hidden");
+    addUser(question);
+    const typing = addTyping();
+    scrollDown();
+    let bot = null;
+    try {
+      const res = await fetch("/api/ask/stream", { method: "POST", headers: headers(true), body: JSON.stringify({ question }) });
+      if (res.status === 401) { showSignin(); throw new Error("Please sign in again."); }
+      if (!res.ok) { const d = await res.json().catch(() => ({})); throw new Error(d.error || "Request failed (" + res.status + ")"); }
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "", finished = false;
+      const handle = (line) => {
+        if (!line.trim()) return;
+        const ev = JSON.parse(line);
+        if (ev.type === "token") {
+          if (!bot) {
+            typing.remove();
+            bot = el("div", "msg bot");
+            bot.appendChild(el("div", "text streaming"));
+            $("thread").appendChild(bot);
+          }
+          bot.querySelector(".text").textContent += ev.text;
+          scrollDown();
+        } else if (ev.type === "done") {
+          finished = true;
+          if (!bot) { typing.remove(); bot = el("div", "msg bot"); bot.appendChild(el("div", "text")); $("thread").appendChild(bot); }
+          finishBot(bot, ev);
+        } else if (ev.type === "error") {
+          throw new Error(ev.message);
+        }
+      };
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        let nl;
+        while ((nl = buffer.indexOf("\n")) >= 0) { handle(buffer.slice(0, nl)); buffer = buffer.slice(nl + 1); }
+      }
+      if (buffer) handle(buffer);
+      if (!finished) throw new Error("The answer was cut off. Please ask again.");
+    } catch (err) {
+      typing.remove();
+      if (bot) bot.remove();
+      const m = el("div", "msg bot notfound");
+      m.appendChild(el("div", "text", err.message));
+      $("thread").appendChild(m);
+    } finally {
+      busy = false;
+      $("sendBtn").disabled = false;
+      scrollDown();
+      $("question").focus();
+    }
+  }
+
+  $("composer").onsubmit = (e) => {
+    e.preventDefault();
+    const q = $("question").value;
+    $("question").value = "";
+    autosize();
+    ask(q);
+  };
+  $("question").addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); $("composer").requestSubmit(); }
+  });
+  function autosize() { const t = $("question"); t.style.height = "auto"; t.style.height = Math.min(t.scrollHeight, 160) + "px"; }
+  $("question").addEventListener("input", autosize);
+
+  SUGGESTIONS.forEach(([q, topic]) => {
+    const li = el("li");
+    const b = el("button");
+    b.type = "button";
+    b.append(el("span", null, q), el("span", null, topic));
+    b.onclick = () => ask(q);
+    li.appendChild(b);
+    $("suggestions").appendChild(li);
+  });
+
+  // ---------------------------------------------------------- dashboard
+  async function loadDashboard() {
+    try {
+      summary = await api("/api/admin/summary");
+      renderFigures(summary.stats);
+      renderFeedback();
+      renderRules();
+    } catch (err) {
+      $("figures").replaceChildren(el("div", "empty", err.message));
+    }
+  }
+  $("refreshBtn").onclick = loadDashboard;
+
+  function renderFigures(st) {
+    const avg = st.avg_rating == null ? "–" : Number(st.avg_rating).toFixed(1) + " / 5";
+    const items = [
+      [st.questions, "Questions asked"],
+      [st.answered, "Answered from the FAQs"],
+      [st.no_match, "Not in the FAQs"],
+      [avg, "Average rating"],
+      [st.open_feedback, "Feedback to review", st.open_feedback > 0],
+      [st.active_rules, "Rules switched on"],
+    ];
+    $("figures").replaceChildren(...items.map(([v, label, attention]) => {
+      const f = el("div", "figure" + (attention ? " attention" : ""));
+      f.append(el("b", null, String(v)), el("span", null, label));
+      return f;
+    }));
+  }
+
+  function scopeSelect(selected) {
+    const sel = el("select");
+    summary.categories.forEach((c) => {
+      const o = el("option", null, c === "all" ? "All answers" : c.replace(/_/g, " ") + " only");
+      o.value = c;
+      if (c === selected) o.selected = true;
+      sel.appendChild(o);
+    });
+    return sel;
+  }
+
+  $("fbOpen").onclick = () => { fbFilter = "open"; renderFeedback(); };
+  $("fbAll").onclick = () => { fbFilter = "all"; renderFeedback(); };
+
+  function renderFeedback() {
+    $("fbOpen").setAttribute("aria-pressed", fbFilter === "open");
+    $("fbAll").setAttribute("aria-pressed", fbFilter === "all");
+    const items = summary.feedback.filter((f) => fbFilter === "all" || f.status === "new" || f.status === "rule_drafted");
+    if (!items.length) {
+      $("fbList").replaceChildren(el("div", "empty", fbFilter === "open" ? "No feedback waiting. New student feedback appears here." : "No feedback yet."));
+      return;
+    }
+    $("fbList").replaceChildren(...items.map(feedbackItem));
+  }
+
+  function feedbackItem(f) {
+    const box = el("article", "fb");
+    const top = el("div", "fb-top");
+    top.append(
+      el("span", "pill " + (f.verdict === "good" ? "good" : "bad"), f.verdict === "good" ? "Helpful" : "Not helpful"),
+      el("span", null, (f.who || "Anonymous") + ", " + when(f.created_at)),
+    );
+    if (f.faq_id) top.appendChild(el("span", null, "used FAQ #" + f.faq_id));
+    if (!(f.status === "new" || f.status === "rule_drafted")) {
+      const label = { rule_created: "Rule created", dismissed: "Dismissed", kb_fix: "Needs FAQ fix" }[f.status] || f.status;
+      top.appendChild(el("span", "pill done", label));
+    }
+    box.append(top, el("p", "fb-q", f.question), el("p", "fb-a", f.answer));
+    if (f.remark) box.appendChild(el("p", "fb-remark", f.remark));
+    if (f.status === "new" || f.status === "rule_drafted") {
+      const actions = el("div", "fb-actions");
+      const draftBtn = el("button", "btn main", "Turn into a rule"); draftBtn.type = "button";
+      const dismissBtn = el("button", "btn", "Dismiss"); dismissBtn.type = "button";
+      actions.append(draftBtn, dismissBtn);
+      box.appendChild(actions);
+      draftBtn.onclick = async () => {
+        draftBtn.disabled = true;
+        draftBtn.textContent = "Drafting a rule…";
+        let text = f.remark || "";
+        let note = "";
+        try {
+          const d = await api("/api/admin/feedback/draft", { id: f.id });
+          if (d.text) text = d.text;
+          if (!d.used_llm) note = "The LLM is offline, so the remark is copied in. Rewrite it as an instruction.";
+          else if (d.kind === "kb_fix") note = "The LLM thinks the FAQ itself may need fixing. Edit the rule, or fix the FAQ instead.";
+        } catch (err) { note = err.message; }
+        actions.remove();
+        box.appendChild(draftForm(f, text, note));
+      };
+      dismissBtn.onclick = async () => {
+        try { await api("/api/admin/feedback/dismiss", { id: f.id }); toast("Feedback dismissed"); loadDashboard(); }
+        catch (err) { toast(err.message); }
+      };
+    } else if (f.resolution_note) {
+      box.appendChild(el("div", "muted", f.resolution_note));
+    }
+    return box;
+  }
+
+  function draftForm(f, text, note) {
+    const form = el("form", "draft");
+    if (note) form.appendChild(el("div", "muted", note));
+    const ta = el("textarea"); ta.value = text; ta.maxLength = 500; ta.setAttribute("aria-label", "Rule text");
+    const row = el("div", "draft-row");
+    const scope = scopeSelect("all");
+    const approve = el("button", "btn main", "Approve rule"); approve.type = "submit";
+    const cancel = el("button", "btn", "Cancel"); cancel.type = "button";
+    row.append(el("span", "muted", "Applies to"), scope, approve, cancel);
+    form.append(el("div", "muted", "Suggested rule. Edit it before approving."), ta, row);
+    cancel.onclick = () => renderFeedback();
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      approve.disabled = true;
+      try {
+        const r = await api("/api/admin/rules", { text: ta.value, scope: scope.value, feedback_id: f.id, reason: "Student feedback: " + (f.remark || f.question) });
+        toast("Rule #" + r.rule_id + " approved. Every new answer follows it.");
+        loadDashboard();
+      } catch (err) { toast(err.message); approve.disabled = false; }
+    };
+    setTimeout(() => ta.focus(), 0);
+    return form;
+  }
+
+  function renderRules() {
+    const scopeSel = $("ruleScope");
+    scopeSel.replaceChildren(...scopeSelect("all").children);
+    scopeSel.value = "all";
+    const rules = summary.rules.filter((r) => r.status !== "rejected");
+    const order = { pending: 0, active: 1, inactive: 2 };
+    rules.sort((a, b) => order[a.status] - order[b.status] || a.id - b.id);
+    if (!rules.length) { $("ruleList").replaceChildren(el("div", "empty", "No rules yet.")); return; }
+    $("ruleList").replaceChildren(...rules.map(ruleItem));
+  }
+
+  function ruleItem(r) {
+    const row = el("div", "rule" + (r.status === "active" ? "" : " off"));
+    const body = el("div");
+    body.appendChild(el("p", null, r.text));
+    const scopeLabel = r.scope === "all" ? "All answers" : r.scope.replace(/_/g, " ") + " only";
+    const source = { seed: "starter rule", feedback: "from feedback", manual: "added by admin" }[r.source] || r.source;
+    body.appendChild(el("div", "muted", "Rule #" + r.id + ", " + scopeLabel.toLowerCase() + ", " + source));
+    if (r.reason) body.appendChild(el("div", "muted", "Why: " + r.reason));
+
+    if (r.status === "pending") {
+      const actions = el("div", "fb-actions");
+      actions.style.marginTop = "8px";
+      const ok = el("button", "btn main", "Approve"); ok.type = "button";
+      const no = el("button", "btn", "Reject"); no.type = "button";
+      ok.onclick = () => setRule(r.id, "active", "Rule approved");
+      no.onclick = () => setRule(r.id, "rejected", "Rule rejected");
+      actions.append(ok, no);
+      body.appendChild(actions);
+      row.append(el("span", "pill bad", "Pending"), body);
+    } else {
+      const sw = el("label", "switch");
+      const input = el("input"); input.type = "checkbox"; input.checked = r.status === "active";
+      input.setAttribute("aria-label", (input.checked ? "Switch off" : "Switch on") + " rule " + r.id);
+      input.onchange = () => setRule(r.id, input.checked ? "active" : "inactive", input.checked ? "Rule switched on" : "Rule switched off");
+      sw.append(input, el("span"));
+      row.append(sw, body);
+    }
+    return row;
+  }
+
+  async function setRule(id, status, msg) {
+    try { await api("/api/admin/rules/status", { id, status }); toast(msg); loadDashboard(); }
+    catch (err) { toast(err.message); loadDashboard(); }
+  }
+
+  $("ruleForm").onsubmit = async (e) => {
+    e.preventDefault();
+    const text = $("ruleText").value.trim();
+    if (!text) { $("ruleText").focus(); return; }
+    try {
+      const r = await api("/api/admin/rules", { text, scope: $("ruleScope").value, reason: "Added by " + (me ? me.name : "admin") });
+      $("ruleText").value = "";
+      toast("Rule #" + r.rule_id + " added and switched on");
+      loadDashboard();
+    } catch (err) { toast(err.message); }
+  };
+
+  // --------------------------------------------------------------- start
+  (async () => {
+    try {
+      const h = await api("/api/health");
+      $("uniName").textContent = h.tenant_name;
+      $("uniName2").textContent = h.tenant_name;
+      document.title = "Admissions Assistant | " + h.tenant_name;
+    } catch (e) { /* page still works; errors show on first action */ }
+    if (token) {
+      try { showApp(await api("/api/me")); return; } catch (e) { /* fall through to sign in */ }
+    }
+    showSignin();
+  })();
+})();
+</script>
+</body>
+</html>
